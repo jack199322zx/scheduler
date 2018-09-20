@@ -7,6 +7,8 @@ import com.nino.model.ScheduleBean;
 import com.nino.schedule.ScheduledExecutorWrapper;
 import org.joda.time.DateTime;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.Executors;
@@ -21,12 +23,25 @@ public class ExecutorBuilder {
     private Queue<Runnable> runnableList = new LinkedBlockingQueue<>();
 
     private ExecutorBuilder(Object o) {
+        if (o == null) throw new RuntimeException("obj should bot be null");
+        init(o);
+    }
+
+    private void init(Object o) {
         this.interpreter = InterpreterFactory.create(o);
         ScheduleBean scheduleBean = this.interpreter.interpret(o);
         this.wrapper = new ScheduledExecutorWrapper((ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(50), scheduleBean);
     }
 
     public static ExecutorBuilder create(DateTime origin) {
+        return new ExecutorBuilder(origin);
+    }
+
+    public static ExecutorBuilder create(Date origin) {
+        return new ExecutorBuilder(origin);
+    }
+
+    public static ExecutorBuilder create(Timestamp origin) {
         return new ExecutorBuilder(origin);
     }
 
